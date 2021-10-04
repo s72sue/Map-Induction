@@ -33,4 +33,14 @@ Experiment1: http://18.25.132.202/experiment.html <br>
 Experiment2: http://18.25.132.202/experiment3.html <br>
 
 ## Model Illustrations
+Here we show the difference between Uniform-POMCP and ML-POMCP/D-POMCP models that use map induction using simple environments. 
 
+Uniform-POMCP without map induction <br>
+![alt-text](https://github.com/s72sue/Map-Induction/blob/main/model/illustrations/doublechain_Uniform.gif)
+
+ML-POMCP/D-POMCP with map induction <br>
+![alt-text](https://github.com/s72sue/Map-Induction/blob/main/model/illustrations/doublechain.gif)
+
+![alt-text](https://github.com/s72sue/Map-Induction/blob/main/model/illustrations/tworoom.gif)
+
+![alt-text](https://github.com/s72sue/Map-Induction/blob/main/model/illustrations/lattice.gif)
