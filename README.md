@@ -19,7 +19,7 @@ Each file begins with basic information about the subject and the experiment, th
   - `<stimulus name> Time`: Time elapsed since the beginning of the trial (in seconds). The trial doesn't begin until subject moves.<br>
   - `<stimulus name> Diamonds`: Number of diamonds collected upto the given Time instant.<br>
   - `<stimulus name> X Postion`: x coordinate of the subject at the given Time instant.<br>
-  - `<stimulus name> X Postion`: y coordinate of the subject at the given Time instant.<br>
+  - `<stimulus name> Z Postion`: y coordinate of the subject at the given Time instant.<br>
   - `<stimulus name> Camera Angle`: Head direction of the subject at the given Time instant.<br>  
   - `<stimulus name> Start Time`: Date and Time recorded at the begining of the trial.<br>
   - `<stimulus name> End Time`: Date and Time recorded at the end of the trial.<br>
