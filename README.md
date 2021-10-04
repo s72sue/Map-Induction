@@ -24,4 +24,4 @@ Each file begins with basic information about the subject and the experiment, th
   - `<stimulus name> Start Time`: Date and Time recorded at the begining of the trial.<br>
   - `<stimulus name> End Time`: Date and Time recorded at the end of the trial.<br>
   - `Answer`: Subject's response to the instruction quiz(s).<br>
-  - `Comments`: Comments that the subject submitted at the end of the experiment, when asked for any strategies they used.<br> 
+  - `Comments`: Comments that the subject submitted at the end of the experiment, when asked to report any strategies they used.<br> 
