@@ -5,6 +5,13 @@ Using a new behavioral Map Induction Task, we show that humans' exploration of n
 We show that this program induction process can be modeled computationally and quantitatively by a  Hierarchical Bayesian framework to improve exploration performance in AI.
 We show that a modeling framework that learns inductive priors about spatial structures can outperform state of the art approximate Partially Observable Markov Decision Process planners, when applied to a realistic spatial navigation domain. 
 
+## Unity Web GL builds
+The compiled WebGL builds for both `Experiment1` and `Experiment2` are provided in their respective folders. The builds can be hosted using any web hosting service (e.g., simmer.io) in order to re-run the experiments and reproduce experimental results. The Unity source code used to generate these builds is available on request. Links to the WebUnity experiments are given below: <br>
+
+Experiment1: http://18.25.132.202/experiment.html <br>
+Experiment2: http://18.25.132.202/experiment3.html <br>
+
+
 ## Datasets
 The `datasets` folder contains anonymized datasets from the Map Induction Task (MIT), both from `Experiment1` and `Experiment2`. Both experiments contain the following two folders: <br><br>
 `data`: This folder contains raw data in csv files collected during the experiment. Each csv file corresponds to a single subject. The csv files are named using randomly generated subject IDs with a unique ID per subject.<br><br>
@@ -25,12 +32,6 @@ Each file begins with basic information about the subject and the experiment, th
   - `<stimulus name> End Time`: Date and Time recorded at the end of the trial.<br>
   - `Answer`: Subject's response to the instruction quiz(s).<br>
   - `Comments`: Comments that the subject submitted at the end of the experiment, when asked to report any strategies they used.<br> 
-
-## Unity Web GL builds
-The compiled WebGL builds for both `Experiment1` and `Experiment2` are provided in their respective folders. The builds can be hosted using any web hosting service (e.g., simmer.io) in order to re-run the experiments and reproduce experimental results. The Unity source code used to generate these builds is available on request. Links to the WebUnity experiments are given below: <br>
-
-Experiment1: http://18.25.132.202/experiment.html <br>
-Experiment2: http://18.25.132.202/experiment3.html <br>
 
 ## Model Illustrations
 Here we show the difference between Uniform-POMCP and ML-POMCP/D-POMCP models that use map induction using simple environments. 
