@@ -40,8 +40,8 @@ Uniform-POMCP without map induction <br>
 ![alt-text](https://github.com/s72sue/Map-Induction/blob/main/model/illustrations/doublechain_Uniform.gif)
 
 ML-POMCP/D-POMCP with map induction <br>
-![alt-text](https://github.com/s72sue/Map-Induction/blob/main/model/illustrations/doublechain.gif)
+![alt-text](model/illustrations/doublechain.gif)
 
-![alt-text](https://github.com/s72sue/Map-Induction/blob/main/model/illustrations/tworoom.gif)
+![alt-text](model/illustrations/tworoom.gif)
 
-![alt-text](https://github.com/s72sue/Map-Induction/blob/main/model/illustrations/lattice.gif)
+![alt-text](model/illustrations/lattice.gif)
