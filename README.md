@@ -1,9 +1,7 @@
 # Map-Induction
 
-Humans are expert explorers. Understanding computational cognitive mechanisms that support this efficiency can advance the study of the human mind, and enable more efficient exploration algorithms. 
-Using a new behavioral Map Induction Task, we show that humans' exploration of new environments can be modeled as program induction -- humans  infer the structure of the unobserved spaces, based on priors over the distribution of observed spaces, and use this inference to optimize exploration. 
-We show that this program induction process can be modeled computationally and quantitatively by a  Hierarchical Bayesian framework to improve exploration performance in AI.
-We show that a modeling framework that learns inductive priors about spatial structures can outperform state of the art approximate Partially Observable Markov Decision Process planners, when applied to a realistic spatial navigation domain. 
+Humans are expert explorers. Understanding the computational cognitive mechanisms that support this efficiency can advance the study of the human mind and enable more efficient exploration algorithms. 
+We hypothesize that humans explore new environments efficiently by inferring the structure of unobserved spaces using spatial information collected from previously explored spaces. This cognitive process can be modeled computationally using program induction in a Hierarchical Bayesian framework that explicitly reasons about uncertainty with strong spatial priors. Using a new behavioral Map Induction Task, we demonstrate that this computational framework explains human exploration behavior better than non-inductive models and outperforms state-of-the-art planning algorithms when applied to a realistic spatial navigation domain. 
 
 ## Unity Web GL builds
 The compiled WebGL builds for both `Experiment1` and `Experiment2` are provided in their respective folders. The builds can be hosted using any web hosting service (e.g., simmer.io) in order to re-run the experiments and reproduce experimental results. The Unity source code used to generate these builds is available on request. Links to the WebUnity experiments are given below: <br>
