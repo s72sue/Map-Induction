@@ -1,0 +1,52 @@
+---
+  alpha: 100
+  grid_spacing_x: 1.0
+  grid_spacing_y: 1.0
+  test7:
+    grid_offset_x: -3.0
+    grid_offset_y: -3.0
+    yrem: 0
+  test7_Reflect:
+    grid_offset_x: -59
+    grid_offset_y: -3.0
+    yrem: 0
+  test8:
+    grid_offset_x: -19
+    grid_offset_y: -5.0
+    yrem: 0
+  test8_Reflect:
+    grid_offset_x: -19
+    grid_offset_y: -5.0
+    yrem: 0
+  test12:
+    grid_offset_x: -3.0
+    grid_offset_y: -3.0
+    yrem: 0
+  test12_Reflect:
+    grid_offset_x: -57.0
+    grid_offset_y: -3.0
+    yrem: 0
+  test11:
+    grid_offset_x: -3.0
+    grid_offset_y: -18.0
+    yrem: 0
+  test11_Reflect:
+    grid_offset_x: -64.0
+    grid_offset_y: -18.0
+    yrem: 0
+  test9:
+    grid_offset_x: -3.0
+    grid_offset_y: -3.0
+    yrem: 0
+  test9_Reflect:
+    grid_offset_x: -29.0
+    grid_offset_y: -3.0
+    yrem: 0
+  test10:
+    grid_offset_x: -3.0
+    grid_offset_y: -4.0
+    yrem: 0
+  test10_Reflect:
+    grid_offset_x: -36.0
+    grid_offset_y: -4.0
+    yrem: 0
