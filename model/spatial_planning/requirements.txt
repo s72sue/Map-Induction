@@ -1,0 +1,9 @@
+ipythonblocks
+julia
+matplotlib
+numpy
+pillow
+minio
+pyyaml
+imageio
+pickle5
