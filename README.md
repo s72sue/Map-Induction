@@ -32,7 +32,7 @@ Each file begins with basic information about the subject and the experiment, th
   - `Comments`: Comments that the subject submitted at the end of the experiment, when asked to report any strategies they used.<br> 
 
 ## Model Illustrations
-Here we show the difference between Uniform-POMCP and ML-POMCP/D-POMCP models that use map induction using simple environments. 
+Here we show the difference between Uniform-POMCP and ML-POMCP/D-POMCP models that use map induction using simple environments. Instructions on how to run the model can be found in the `README.md` file under `model/spatial_planning`.
 
 Uniform-POMCP without map induction <br>
 ![alt-text](model/illustrations/doublechain_Uniform.gif)
