@@ -1,0 +1,17 @@
+src/planning/temp/
+plan.*
+.DS_Store
+.ipynb_checkpoints/
+src/__pycache__/
+results/
+temp/
+notebooks/tmp_minio
+notebooks/human_experiment_results.pkl
+notebooks/human_experiment_results*
+notebooks/human_exp2_results*
+tmp_minio/
+__pycache__/
+deploy*
+Docker*
+OldDocker*
+.dockerignore
