@@ -89,6 +89,26 @@ def write_mapcode(filename, data):
     n = text_file.write("".join(data_str))
     text_file.close()
 
+def write_mapcode_int(filename, data):
+    # f = open(filename, 'w')
+    # f.write(f"{data.shape[1]}\n")
+    # f.write(f"{data.shape[0]}\n")
+    # np.savetxt(f, data, fmt="%d", delimiter='', newline="\n")
+    # f.close()
+
+    text_file = open(filename, "w")
+    data_str = [str(q)+"\n" for q in list(reversed(list(data.shape)))]
+    for line in data:
+        line_str = []
+        for cell in line:
+            line_str.append("-{:02d}".format(cell))
+        data_str.append("".join(line_str))
+        data_str.append("\n")
+
+    print(data_str)
+    n = text_file.write("".join(data_str))
+    text_file.close()
+
 
 
 bucket_name = "spatial-planning"
@@ -110,6 +130,7 @@ def read_from_minio(file, prefix="spatial_planning"):
     else:
         fn=file
     print(fn)
+    print(tmp_path)
     minioClient.fget_object(bucket_name, fn , tmp_path)
 
     # Write data to a pickle file
@@ -138,7 +159,7 @@ def write_to_minio(obj, name):
     # Write file to bucket
     minioClient.fput_object(bucket_name, "spatial_planning/"
                             + str(tmp_filename), str(tmp_path))
-    shutil.rmtree(tmp_folder)
+    # shutil.rmtree(tmp_folder)
 
 # Visualization
 def gen_gif(grids, hyps=None, temp_dir = "../temp/"):
@@ -191,7 +212,7 @@ def query_specs(specs, query):
                       secret_key=os.environ["S3SECRET_CUST"],
                       secure=True)
     total_datas = []
-    for name, spec in specs.items():
+    for name, spec in reversed(specs.items()):
         if(query(spec)):
             # Get name from spec
             print("Loading data: "+str(name))
@@ -253,6 +274,28 @@ def find_agent(observation):
                 return y, x
     assert False, "Agent not on grid"
 
+def isolate_rooms(redundant_map):
+    global_explored = [[None for _ in range(redundant_map.shape[1])] for _ in range(redundant_map.shape[0])]
+    isolation_counter = 0
+    for yi in range(redundant_map.shape[0]):
+        for xi in range(redundant_map.shape[1]):
+            if(global_explored[yi][xi] is None):
+                global_explored[yi][xi] = isolation_counter
+                isolation_counter+=1
+                Q = [(yi, xi)]
+                explored = defaultdict(lambda: False)
+                while(len(Q) > 0):
+                    y, x = Q.pop(0)
+                    for ny, nx in get_cardianals(y, x):
+                        neighbor = (ny, nx)
+                        if(not explored[neighbor] and in_state_bounds(redundant_map, ny, nx) and (redundant_map[ny, nx] == redundant_map[yi, xi])):
+                            explored[neighbor] = True
+                            Q.append(neighbor)
+                            global_explored[ny][nx] = global_explored[yi][xi]
+
+    return global_explored
+
+
 def find_reachable_unobserved(observation):
     # TODO: BFS from current position
     ay, ax = find_agent(observation)
@@ -271,26 +314,6 @@ def find_reachable_unobserved(observation):
                 Q.append(neighbor)
 
     assert False, "Everything is observed"
-
-# def fill_obsmap(observation):
-#     new_state = np.zeros(observation.shape)
-#     oy, ox = find_reachable_unobserved(observation)
-#     start = (oy, ox, 0)
-#     Q = [start]
-#     explored = defaultdict(lambda: False)
-#     while(len(Q) > 0):
-#         q = Q.pop(0)
-#         y, x, depth = q
-#         rval = 1.0/float((depth)+1)
-#         if(rval > new_state[y, x]):
-#             new_state[y, x] = rval
-
-#         for ny, nx in get_cardianals(y, x):
-#             neighbor = (ny, nx, depth+1)
-#             if(not explored[(neighbor[0], neighbor[1])] and in_state_bounds(new_state, ny, nx) and (observation[ny, nx] == EMPTY or observation[ny, nx] == UNOBSERVED)) :
-#                 explored[(neighbor[0], neighbor[1])] = True
-#                 Q.append(neighbor)
-#     return new_state, (oy, ox)
 
 def fill_obsmap(observation):
     new_state = np.zeros(observation.shape)

@@ -35,19 +35,13 @@ def getBelief(hyps, map_space, obsmap=None, reward=False):
     liklst = list()
     for i in range(len(hyps)):
         h = hyps[i]
-        diff = obs_diff_novel(h, map_space)
-        reward_mismatch = get_reward_mismatch(h, map_space)
-        C = np.count_nonzero(diff)
+        C = np.count_nonzero(obs_diff(h, map_space))
         prior = uniform_prior()  #size_prior(submaps[i])
-        if(reward):
-            if(get_reward_count(h)>0 and not reward_mismatch):
-                likelihood = (1-activation(C/np.prod(map_space.shape), power=1))
-            else:
-                likelihood = 0
+        if(get_reward_count(h)>0 and C==0):
+            likelihood = 1
         else:
-            likelihood = 1-activation(C/np.prod(map_space.shape), power=1)
-
-
+            likelihood = 0
+       
         maps.append(h)
         prilst.append(prior)
         liklst.append(likelihood)

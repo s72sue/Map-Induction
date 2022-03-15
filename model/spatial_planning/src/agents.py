@@ -16,7 +16,7 @@ import sys
 import matplotlib.pyplot as plt
 
 j = julia.Julia()
-j.include('./src/pomdp/pomcp_planner_obs_rotational.jl')
+j.include('./src/pomdp/pomcp_planner_obs_room.jl')
 
 class Agent:
     def __init__(self,
@@ -25,6 +25,7 @@ class Agent:
                  num_iterations=1000,
                  optimism = 0.05,
                  replan_strat="every_step",
+                 room_keys=[[]],
                  *args,
                  **kwargs):
 
@@ -36,10 +37,19 @@ class Agent:
         self.actions = ["up", "down", "left", "right"]
         self.frag_size = 5 # Larger than or equal to the expected submap resolution
         self.term = False
-        self.multi=True
+        self.multi = True
         self.i=0
         self.q=0
+        self.room_keys = np.array(room_keys[0])
 
+        self.room_key_masks = []
+        for ki in range(np.max(self.room_keys)+1):
+            mask = np.zeros(self.room_keys.shape)
+            for rky in range(self.room_keys.shape[0]):
+                for rkx in range(self.room_keys.shape[1]):
+                    if(self.room_keys[rky, rkx] == ki):
+                        mask[rky, rkx] = 1
+            self.room_key_masks.append(mask)
 
     # Recursively descend tree to extract statistics
     def extract_tree_stats_helper(self, observation_index, partial_path, n, children, a_labels, o_labels, o_lookup_dict):
@@ -101,12 +111,10 @@ class Agent:
 
     def get_hyps(self, observation, hypLib = defaultdict(list), submapLib = defaultdict(list), reward_squares = []):
 
-        print("Get hyps preproc...")
         reward_squares = list(set(reward_squares+self.get_reward_squares(observation)))
         clean_obs = self.remove_agent_from_observation(observation)
         clean_pop_obs = self.populate_observation_reward(clean_obs, reward_squares)
 
-        print("Gen Proposals")
         if(clean_pop_obs.shape[0] >= clean_pop_obs.shape[1]):
             min_dim_y = int(clean_pop_obs.shape[0]/self.frag_size)
             min_dim_x = clean_pop_obs.shape[1]
@@ -114,11 +122,21 @@ class Agent:
             min_dim_y = clean_pop_obs.shape[0]
             min_dim_x = int(clean_pop_obs.shape[1]/self.frag_size)
 
-
+        hypLib = defaultdict(list)
+        submapLib = defaultdict(list)
         # print("Min dim: {}/{}".format(min_dim_y, min_dim_x))
-        print("Get hyps matching...")
+        if(self.alternate_policy):
+            return {}
         if(self.multi):
             prop_dict = gen_proposals(map_space = clean_pop_obs, min_dim=(min_dim_y, min_dim_x), max_dim=(min_dim_y, min_dim_x))
+
+            # DEBUGGING
+            # f=plt.figure()
+            # for e, props in enumerate(prop_dict.values()):
+            #     for pi, prop in enumerate(props):
+            #         plt.imshow(prop)
+            #         f.savefig("./temp/prop{}_{}_{}.pdf".format(self.q, e, pi), bbox_inches='tight')
+
             submaps = None
             submapLib = None
             hypLib, tophyps = valid_multi_match(prop_dict, clean_pop_obs, hypLib = hypLib)
@@ -126,16 +144,11 @@ class Agent:
             submaps_lt=None
             tophyps_lt = match_existing_multi(hypLib, clean_pop_obs)
 
-
-            print("Get hyps filter existing...")
-            print(len(tophyps))
-
             for tophyp_lt in tophyps_lt:
-                if(all([(np.array(tophyp_lt) != np.array(tophyp)).any() for tophyp in tophyps])):
+                if(all([not np.array_equal(tophyp_lt, tophyp) for tophyp in tophyps])):
                     tophyps.append(np.array(tophyp_lt))
 
             # Need to remove unobserved duplicates
-            print("Sorting submap hyps...")
             sorted_submap_hyps = sorted(tophyps, key=lambda submap_hyp: np.count_nonzero(submap_hyp == UNOBSERVED))
 
 
@@ -174,6 +187,9 @@ class Agent:
 
         else:
             prop_dict = gen_proposals(map_space = clean_pop_obs, min_dim=(min_dim_y, min_dim_x), max_dim=(min_dim_y, min_dim_x))
+            
+
+
             submapLib, hypLib, submaps, tophyps = valid_match(prop_dict, clean_pop_obs, submapLib = submapLib, hypLib = hypLib)
             submaps_lt, tophyps_lt = match_existing(submapLib, hypLib, clean_pop_obs)
 
@@ -224,31 +240,18 @@ class Agent:
                     min_belief.append(belief[i])
                     min_maps.append(maps[i])
 
-        print("Filling rewards...")
         # Add reward decay map
         min_reward_maps = [fill_reward(smap, observation)+[None, None] for smap in min_maps]+[None, None]
-
-        print("reward_maps")
-        print(len(min_reward_maps))
-        # if(len(min_reward_maps)>0):
-        #     self.q+=1
-
-        #     f = plt.figure()
-        #     plt.imshow(min_reward_maps[0][0])
-        #     f.savefig("./temp/map{}.pdf".format(self.q), bbox_inches='tight')
-
-        #     print(len(min_reward_maps[0]))
-        #     print(min_reward_maps[0][0].shape)
-
-
         min_fill_obsmap, min_fill_key = fill_obsmap(observation)
 
         f=plt.figure()
-        plt.imshow(min_fill_obsmap)
-        f.savefig("./temp/debug{}.pdf".format(self.q), bbox_inches='tight')
-
         plt.imshow(observation)
         f.savefig("./temp/obs{}.pdf".format(self.q), bbox_inches='tight')
+
+        # for e, min_map in enumerate(min_maps):
+        #     plt.imshow(min_map)
+        #     f.savefig("./temp/hyp{}_{}.pdf".format(self.q, e), bbox_inches='tight')
+
         self.q+=1
         print("Num hyps: "+str(len(min_maps)))
         return {"submapLib": submapLib,
@@ -276,9 +279,7 @@ class Agent:
         for stim in self.stims:
             sy, sx = stim.shape
             current_state = stim
-            # write_mapcode("stuff.txt", stim)
-            current_observed_state = j.init_observed_state(stim, self.observation_mode )
-            # write_mapcode("stuff2.txt", current_observed_state)
+            current_observed_state = j.init_observed_state(stim, self.observation_mode, self.room_keys, self.room_key_masks)
             current_observation = current_observed_state
             states.append(current_state)
             observed_states.append(current_observed_state)
@@ -308,9 +309,11 @@ class Agent:
                                      current_observed_state,
                                      action,
                                      self.observation_mode,
-                                     self.optimism)
+                                     self.optimism,
+                                     self.room_keys,
+                                     self.room_key_masks)
 
-                    current_observation = j.init_observed_state(next_state, self.observation_mode)
+                    current_observation = j.init_observed_state(next_state, self.observation_mode, self.room_keys, self.room_key_masks)
 
                     states.append(next_state)
                     observed_states.append(new_observed_state)
@@ -322,12 +325,12 @@ class Agent:
                     past_observed_state = copy.copy(current_observed_state)
                     current_observed_state = copy.copy(new_observed_state)
 
-                    # Get map hypotheses from observations
-                    run_info = self.get_hyps(current_observed_state,
-                                             hypLib=run_info['hypLib'],
-                                             submapLib=run_info['submapLib'],
-                                             reward_squares=run_info['reward_squares'])
-
+                    # # Get map hypotheses from observations
+                    # run_info = self.get_hyps(current_observed_state,
+                    #                          hypLib=run_info['hypLib'],
+                    #                          submapLib=run_info['submapLib'],
+                    #                          reward_squares=run_info['reward_squares'])
+                    run_info={}
                     run_info.update(run_info_extras)
                     run_infos.append(run_info)
 
@@ -473,52 +476,73 @@ class POMCP(Agent):
 
     def get_actions(self, current_observed_state, current_observation, previous_reward, run_infos):
         run_info_extras = {}
-        if(self.agent_name == "pomcp_simple"):
-            pred_actions, policy = j.step_pomcp(current_observed_state,
-                                        self.search_depth,
-                                        self.observation_mode,
-                                        self.tree_queries,
-                                        self.discount_factor,
-                                        self.optimism, 
-                                        run_infos[-1]['obs_reward_map'],
-                                        run_infos[-1]['obs_reward_key'])
-            run_info_extras['policy'] = self.extract_tree_stats(policy)
-        
-        elif(self.agent_name == "pomcp_ssp" or self.agent_name == "pomcp_mle"):
-            maps, beliefs, reward_maps = run_infos[-1]['maps'], run_infos[-1]['beliefs'], run_infos[-1]['reward_maps']
-            if(len(maps) > 0 and self.agent_name == "pomcp_mle"):
-                # Remove all but most likely
-                max_belief = beliefs[0]
-                max_map = maps[0]
-                max_reward_map = reward_maps[0]
-                for nmap, belief, reward_map in zip(maps, beliefs, reward_maps):
-                    if(belief > max_belief):
-                        max_belief = belief
-                        max_map = nmap
-                        max_reward_map = reward_map
-
-                maps = [max_map]
-                beliefs = [1.0]
-                reward_maps = [max_reward_map+[None, None]]+[None, None]
-
-
-            pred_actions, valid_hyps, policy = j.step_pomcp_ssp(current_observed_state, 
-                                                        self.search_depth, 
-                                                        self.observation_mode, 
-                                                        self.tree_queries, 
-                                                        self.discount_factor, 
-                                                        self.optimism,
-                                                        maps, 
-                                                        beliefs, 
-                                                        reward_maps,
-                                                        run_infos[-1]['obs_reward_map'],
-                                                        run_infos[-1]['obs_reward_key'])
-            run_info_extras['valid_hyps'] = valid_hyps
-            run_info_extras['policy'] = self.extract_tree_stats(policy)
-        else:
-            raise NotImplementedError
-
         if(self.alternate_policy):
             return self.get_alternate_actions(current_observed_state, current_observation, previous_reward, run_infos), run_info_extras
         else:    
+
+            if(self.agent_name == "pomcp_simple"):
+                simple_reward_maps = fill_reward(current_observed_state, current_observed_state)
+                simple_reward_map = None
+                if(len(simple_reward_maps) == 0):
+                    simple_reward_map = np.zeros(current_observed_state.shape)
+                else:
+                    simple_reward_map = simple_reward_maps[0]
+
+                f=plt.figure()
+                plt.imshow(simple_reward_map)
+                f.savefig("./temp/rew{}.pdf".format(self.q), bbox_inches='tight') 
+                pred_actions, policy = j.step_pomcp(current_observed_state,
+                                                    self.search_depth,
+                                                    self.observation_mode,
+                                                    self.tree_queries,
+                                                    self.discount_factor,
+                                                    self.optimism, 
+                                                    self.optimism*run_infos[-1]['obs_reward_map']+simple_reward_map,
+                                                    run_infos[-1]['obs_reward_key'],
+                                                    self.room_keys,
+                                                    self.room_key_masks)
+                run_info_extras['policy'] = self.extract_tree_stats(policy)
+            
+            elif(self.agent_name == "pomcp_ssp" or self.agent_name == "pomcp_mle"):
+                maps, beliefs, reward_maps = run_infos[-1]['maps'], run_infos[-1]['beliefs'], run_infos[-1]['reward_maps']
+                if(len(maps) > 0 and self.agent_name == "pomcp_mle"):
+                    # Remove all but most likely
+                    max_belief = beliefs[0]
+                    max_map = maps[0]
+                    max_reward_map = reward_maps[0]
+                    for nmap, belief, reward_map in zip(maps, beliefs, reward_maps):
+                        if(belief > max_belief):
+                            max_belief = belief
+                            max_map = nmap
+                            max_reward_map = reward_map
+
+                    f=plt.figure()
+                    plt.imshow(max_map)
+                    f.savefig("./temp/maxhyp{}.pdf".format(self.q), bbox_inches='tight')
+
+                    maps = [max_map]
+                    beliefs = [1.0]
+                    reward_maps = [max_reward_map+[None, None]]+[None, None]
+
+
+                pred_actions, valid_hyps, policy = j.step_pomcp_ssp(current_observed_state, 
+                                                                    self.search_depth, 
+                                                                    self.observation_mode, 
+                                                                    self.tree_queries, 
+                                                                    self.discount_factor, 
+                                                                    self.optimism,
+                                                                    maps, 
+                                                                    beliefs, 
+                                                                    reward_maps,
+                                                                    self.optimism*run_infos[-1]['obs_reward_map'],
+                                                                    run_infos[-1]['obs_reward_key'], 
+                                                                    self.room_keys,
+                                                                    self.room_key_masks)
+                run_info_extras['valid_hyps'] = valid_hyps
+                run_info_extras['policy'] = self.extract_tree_stats(policy)
+            else:
+                raise NotImplementedError
             return pred_actions, run_info_extras
+
+
+

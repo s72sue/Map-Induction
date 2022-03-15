@@ -41,12 +41,9 @@ def get_proposals(prop_space, xy):
                         ex=True
                 if(not ex):
                     prop.append(newp)
-
                     if(len(prop)>2):
                         for pi, p in enumerate(prop):
                             write_mapcode("prop{}.txt".format(pi), p)
-                        import sys
-                        sys.exit(1)
     return prop
 
 

@@ -1,0 +1,6 @@
+test7: took one row off top and bottom
+test8: took one row off top, added one hallway to top, removed 8 rows on bottom
+test9: took one row off top and bottom
+test10: took one row off top and bottom, added hallway to top and bottom
+test11: took one row off top and bottom
+test12: took one row off top and bottom, added hallway to top

@@ -197,10 +197,11 @@ def match_existing(submapLib, hypLib, map_space, submaps=None, tophyps=None):
 
 def match_existing_multi(hypLib, map_space, tophyps=None):
     tophyps = list()
-    for (k2,hyps) in hypLib.items():
+    for (k2, hyps) in hypLib.items():
         for hyp in hyps:
             m = match(hyp, map_space, rr=False)
-            tophyps.append(hyp)
+            if(m):
+                tophyps.append(hyp)
     return tophyps
 
 

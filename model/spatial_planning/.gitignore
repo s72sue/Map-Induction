@@ -15,3 +15,5 @@ deploy*
 Docker*
 OldDocker*
 .dockerignore
+notebooks/exp_results
+notebooks/figs
