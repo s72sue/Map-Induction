@@ -6,8 +6,8 @@ We hypothesize that humans explore new environments efficiently by inferring the
 ## Unity Web GL builds
 The compiled WebGL builds for both `Experiment1` and `Experiment2` are provided in their respective folders. The builds can be hosted using any web hosting service (e.g., simmer.io) in order to re-run the experiments and reproduce experimental results. The Unity source code used to generate these builds is available on request. Links to the WebUnity experiments are given below: <br>
 
-Experiment1: http://18.25.132.202/experiment.html <br>
-Experiment2: http://18.25.132.202/experiment3.html <br> 
+Experiment 1: http://18.25.132.202/experiment.html <br>
+Experiment 2: http://18.25.132.202/experiment3.html <br> 
 
 
 ## Datasets
