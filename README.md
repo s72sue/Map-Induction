@@ -43,3 +43,18 @@ ML-POMCP/D-POMCP with map induction <br>
 ![alt-text](model/illustrations/tworoom.gif)
 
 ![alt-text](model/illustrations/lattice.gif)
+
+
+## Citation
+If you find this work useful, please use this bibtex to cite our paper:
+```
+@inproceedings{
+sharma2022map,
+title={Map Induction: Compositional spatial submap learning for efficient exploration in novel environments},
+author={Sugandha Sharma and Aidan Curtis and Marta Kryven and Joshua B. Tenenbaum and Ila R Fiete},
+booktitle={International Conference on Learning Representations},
+year={2022},
+url={https://openreview.net/forum?id=1NUsBU-7HAL}
+}   
+```
+
