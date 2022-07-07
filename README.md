@@ -46,7 +46,8 @@ ML-POMCP/D-POMCP with map induction <br>
 
 
 ## Citation
-If you find this work useful, please use this bibtex to cite our paper:
+If you find this work useful, we would appreciate if you could cite our paper:
+
 ```
 @inproceedings{
 sharma2022map,
